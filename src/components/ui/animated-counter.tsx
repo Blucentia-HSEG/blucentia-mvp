@@ -49,7 +49,7 @@ export function AnimatedCounter({
       animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
       transition={{ duration: 0.5 }}
     >
-      {prefix}{count.toLocaleString()}{suffix}
+      {prefix}{count.toLocaleString('en-US')}{suffix}
     </motion.span>
   )
 }

@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import '../styles/globals.css'
 import Link from 'next/link'
 import { ThemeProvider } from '@/contexts/theme-context'
+import { AuthProvider } from '@/contexts/auth-context'
 import Navigation from '@/components/navigation/Navigation'
 import { Flame } from 'lucide-react'
 
@@ -22,11 +23,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider>
-          <div className="min-h-screen bg-gradient-subtle dark:bg-gray-900">
-            <Navigation />
-            <main>
-              {children}
-            </main>
+          <AuthProvider>
+            <div className="min-h-screen bg-gradient-subtle dark:bg-gray-900">
+              <Navigation />
+              <main>
+                {children}
+              </main>
             <footer className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-t border-border/50">
               <div className="container-max section-padding py-20">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
@@ -71,7 +73,8 @@ export default function RootLayout({
                 </div>
               </div>
             </footer>
-          </div>
+            </div>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

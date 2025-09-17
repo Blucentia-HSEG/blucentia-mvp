@@ -207,7 +207,11 @@ export default function AffiliateDashboardPage() {
                       </div>
                       <p className="text-sm text-slate-600 dark:text-slate-400">{affiliate.email}</p>
                       <p className="text-xs text-slate-600 dark:text-slate-400">
-                        Joined: {affiliate.joinDate.toLocaleDateString()}
+                        Joined: {affiliate.joinDate.toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit'
+                        })}
                       </p>
                     </div>
                     

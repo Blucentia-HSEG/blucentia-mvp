@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/ui/glass-card"
 import { ArrowRight, Sparkles, Shield, Users, TrendingUp, Globe, Flame } from "lucide-react"
+import Link from "next/link"
 
 export function HeroSection() {
   return (
@@ -144,16 +145,18 @@ export function HeroSection() {
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="group bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:border-blue-300 dark:hover:border-blue-600 hover:text-slate-800 dark:hover:text-slate-200 px-10 py-6 text-lg font-semibold rounded-2xl shadow-lg shadow-slate-500/10 dark:shadow-slate-500/5 hover:shadow-xl transition-all duration-300"
-              >
-                <span className="flex items-center">
-                  Company Dashboard
-                  <Globe className="ml-3 w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
-                </span>
-              </Button>
+              <Link href="/companies">
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="group bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 hover:border-blue-300 dark:hover:border-blue-600 hover:text-slate-800 dark:hover:text-slate-200 px-10 py-6 text-lg font-semibold rounded-2xl shadow-lg shadow-slate-500/10 dark:shadow-slate-500/5 hover:shadow-xl transition-all duration-300"
+                >
+                  <span className="flex items-center">
+                    Companies
+                    <Globe className="ml-3 w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
+                  </span>
+                </Button>
+              </Link>
             </motion.div>
           </motion.div>
 
@@ -167,15 +170,16 @@ export function HeroSection() {
             <motion.div
               whileHover={{ y: -8, scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="h-full"
             >
-              <GlassCard delay={0.1} className="group">
-                <div className="p-6 text-center">
+              <GlassCard delay={0.1} className="group h-full">
+                <div className="p-6 text-center h-full flex flex-col">
                   <div className="relative w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-blue-500/25 dark:shadow-blue-500/20">
                     <Shield className="w-8 h-8 text-white" />
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
                   </div>
                   <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">Trust & Security</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Enterprise-grade security with complete transparency and data protection</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed flex-grow">Enterprise-grade security with complete transparency and data protection</p>
                 </div>
               </GlassCard>
             </motion.div>
@@ -183,15 +187,16 @@ export function HeroSection() {
             <motion.div
               whileHover={{ y: -8, scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="h-full"
             >
-              <GlassCard delay={0.2} className="group">
-                <div className="p-6 text-center">
+              <GlassCard delay={0.2} className="group h-full">
+                <div className="p-6 text-center h-full flex flex-col">
                   <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-emerald-500/25 dark:shadow-emerald-500/20">
                     <Users className="w-8 h-8 text-white" />
                     <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
                   </div>
                   <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">Community Driven</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Join thousands of transparency advocates building a better corporate world</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed flex-grow">Join thousands of transparency advocates building a better corporate world</p>
                 </div>
               </GlassCard>
             </motion.div>
@@ -199,15 +204,16 @@ export function HeroSection() {
             <motion.div
               whileHover={{ y: -8, scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="h-full"
             >
-              <GlassCard delay={0.3} className="group">
-                <div className="p-6 text-center">
+              <GlassCard delay={0.3} className="group h-full">
+                <div className="p-6 text-center h-full flex flex-col">
                   <div className="relative w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-amber-500/25 dark:shadow-amber-500/20">
                     <TrendingUp className="w-8 h-8 text-white" />
                     <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
                   </div>
                   <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">Real Impact</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Measurable change in corporate culture with data-driven insights</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed flex-grow">Measurable change in corporate culture with data-driven insights</p>
                 </div>
               </GlassCard>
             </motion.div>

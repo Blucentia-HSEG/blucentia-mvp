@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,11 +9,15 @@ import { surveyQuestions, submitSurveyResponse, submitPledge } from '@/lib/mock/
 import { SurveyResponse } from '@/types';
 import ContextualHelp from '@/components/navigation/ContextualHelp';
 import RelatedActions from '@/components/navigation/RelatedActions';
+import { Upload, FileText, X, CheckCircle, SkipForward } from 'lucide-react';
 
 export default function EmployeeSurveyPage() {
-  const [currentStep, setCurrentStep] = useState<'survey' | 'pledge' | 'complete'>('survey');
+  const [currentStep, setCurrentStep] = useState<'survey' | 'documents' | 'pledge' | 'complete'>('survey');
   const [responses, setResponses] = useState<Record<string, string | number>>({});
   const [pledgeMessage, setPledgeMessage] = useState('');
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [hasUploadedDocuments, setHasUploadedDocuments] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [employeeId] = useState('emp_new'); // Mock employee ID for new user
 
   const handleResponseChange = (questionId: string, answer: string | number) => {
@@ -31,6 +35,27 @@ export default function EmployeeSurveyPage() {
     }));
 
     submitSurveyResponse(employeeId, surveyResponses);
+    setCurrentStep('documents');
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setUploadedFiles(prev => [...prev, ...files]);
+    setHasUploadedDocuments(true);
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    if (uploadedFiles.length === 1) {
+      setHasUploadedDocuments(false);
+    }
+  };
+
+  const handleDocumentsSubmit = () => {
+    setCurrentStep('pledge');
+  };
+
+  const handleDocumentsSkip = () => {
     setCurrentStep('pledge');
   };
 
@@ -46,8 +71,9 @@ export default function EmployeeSurveyPage() {
 
   const getTruthPointsEarned = () => {
     let points = 0;
-    if (currentStep === 'pledge') points += 50; // Survey completion
-    if (currentStep === 'complete') points += 150; // Survey + pledge
+    if (currentStep === 'documents') points += 50; // Survey completion
+    if (currentStep === 'pledge') points += hasUploadedDocuments ? 100 : 50; // Survey + documents (if uploaded)
+    if (currentStep === 'complete') points += hasUploadedDocuments ? 200 : 150; // Survey + documents + pledge
     return points;
   };
 
@@ -62,26 +88,33 @@ export default function EmployeeSurveyPage() {
           className="mb-12"
         >
           <GlassCard delay={0.1} className="p-6">
-            <div className="flex items-center justify-center space-x-8">
-              <div className={`flex items-center ${currentStep === 'survey' ? 'text-primary' : currentStep === 'pledge' || currentStep === 'complete' ? 'text-accent' : 'text-slate-600 dark:text-slate-400'}`}>
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${currentStep === 'survey' ? 'bg-primary text-white' : currentStep === 'pledge' || currentStep === 'complete' ? 'bg-accent text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>
+            <div className="flex items-center justify-center space-x-4 lg:space-x-8">
+              <div className={`flex items-center ${currentStep === 'survey' ? 'text-primary' : currentStep === 'documents' || currentStep === 'pledge' || currentStep === 'complete' ? 'text-accent' : 'text-slate-600 dark:text-slate-400'}`}>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${currentStep === 'survey' ? 'bg-primary text-white' : currentStep === 'documents' || currentStep === 'pledge' || currentStep === 'complete' ? 'bg-accent text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>
                   1
                 </div>
-                <span className="ml-4 font-semibold text-base">Survey</span>
+                <span className="ml-4 font-semibold text-sm lg:text-base">Survey</span>
               </div>
-              <div className={`w-24 h-1 rounded-full ${currentStep === 'pledge' || currentStep === 'complete' ? 'bg-accent' : 'bg-slate-200 dark:bg-slate-700'}`}></div>
-              <div className={`flex items-center ${currentStep === 'pledge' ? 'text-primary' : currentStep === 'complete' ? 'text-accent' : 'text-slate-600 dark:text-slate-400'}`}>
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${currentStep === 'pledge' ? 'bg-primary text-white' : currentStep === 'complete' ? 'bg-accent text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>
+              <div className={`w-16 lg:w-24 h-1 rounded-full ${currentStep === 'documents' || currentStep === 'pledge' || currentStep === 'complete' ? 'bg-accent' : 'bg-slate-200 dark:bg-slate-700'}`}></div>
+              <div className={`flex items-center ${currentStep === 'documents' ? 'text-primary' : currentStep === 'pledge' || currentStep === 'complete' ? 'text-accent' : 'text-slate-600 dark:text-slate-400'}`}>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${currentStep === 'documents' ? 'bg-primary text-white' : currentStep === 'pledge' || currentStep === 'complete' ? 'bg-accent text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>
                   2
                 </div>
-                <span className="ml-4 font-semibold text-base">Pledge</span>
+                <span className="ml-4 font-semibold text-sm lg:text-base">Documents</span>
               </div>
-              <div className={`w-24 h-1 rounded-full ${currentStep === 'complete' ? 'bg-accent' : 'bg-slate-200 dark:bg-slate-700'}`}></div>
-              <div className={`flex items-center ${currentStep === 'complete' ? 'text-accent' : 'text-slate-600 dark:text-slate-400'}`}>
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${currentStep === 'complete' ? 'bg-accent text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>
+              <div className={`w-16 lg:w-24 h-1 rounded-full ${currentStep === 'pledge' || currentStep === 'complete' ? 'bg-accent' : 'bg-slate-200 dark:bg-slate-700'}`}></div>
+              <div className={`flex items-center ${currentStep === 'pledge' ? 'text-primary' : currentStep === 'complete' ? 'text-accent' : 'text-slate-600 dark:text-slate-400'}`}>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${currentStep === 'pledge' ? 'bg-primary text-white' : currentStep === 'complete' ? 'bg-accent text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>
                   3
                 </div>
-                <span className="ml-4 font-semibold text-base">Complete</span>
+                <span className="ml-4 font-semibold text-sm lg:text-base">Pledge</span>
+              </div>
+              <div className={`w-16 lg:w-24 h-1 rounded-full ${currentStep === 'complete' ? 'bg-accent' : 'bg-slate-200 dark:bg-slate-700'}`}></div>
+              <div className={`flex items-center ${currentStep === 'complete' ? 'text-accent' : 'text-slate-600 dark:text-slate-400'}`}>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${currentStep === 'complete' ? 'bg-accent text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>
+                  4
+                </div>
+                <span className="ml-4 font-semibold text-sm lg:text-base">Complete</span>
               </div>
             </div>
           </GlassCard>
@@ -182,6 +215,141 @@ export default function EmployeeSurveyPage() {
           </motion.div>
         )}
 
+        {/* Document Upload Step */}
+        {currentStep === 'documents' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <GlassCard delay={0.2} className="p-8">
+              <div className="mb-8">
+                <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-200 mb-4">Upload Supporting Documents</h2>
+                <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Share documents that demonstrate your company's transparency practices. This is optional but will earn you an additional 50 Truth Points!
+                </p>
+              </div>
+              
+              <div className="space-y-6">
+                {/* Survey Completion Bonus */}
+                <div className="bg-gradient-to-r from-green-50 to-green-50/50 dark:from-green-900/20 dark:to-green-900/10 border border-green-200 dark:border-green-700 rounded-xl p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                      <CheckCircle className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-green-600 dark:text-green-400 font-bold text-xl">+50 Truth Points</div>
+                      <span className="status-success">Survey Complete</span>
+                      <p className="text-green-700 dark:text-green-300 text-sm mt-1">You've successfully completed the transparency survey!</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* File Upload Area */}
+                <div className="space-y-4">
+                  <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 text-center hover:border-primary dark:hover:border-primary transition-colors">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                    <div className="space-y-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-primary/20 rounded-2xl flex items-center justify-center mx-auto">
+                        <Upload className="w-8 h-8 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-2">
+                          Upload Supporting Documents
+                        </h3>
+                        <p className="text-slate-600 dark:text-slate-400 mb-4">
+                          Drag and drop files here, or click to browse
+                        </p>
+                        <Button
+                          onClick={() => fileInputRef.current?.click()}
+                          variant="outline"
+                          className="bg-white/50 dark:bg-slate-800/50"
+                        >
+                          <Upload className="w-4 h-4 mr-2" />
+                          Choose Files
+                        </Button>
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        Supported formats: PDF, DOC, DOCX, TXT, PNG, JPG, JPEG (Max 10MB each)
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Uploaded Files List */}
+                  {uploadedFiles.length > 0 && (
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-slate-700 dark:text-slate-300">Uploaded Files:</h4>
+                      {uploadedFiles.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <FileText className="w-5 h-5 text-slate-500" />
+                            <div>
+                              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{file.name}</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400">
+                                {(file.size / 1024 / 1024).toFixed(2)} MB
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            onClick={() => removeFile(index)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Bonus Points Info */}
+                  {hasUploadedDocuments && (
+                    <div className="bg-gradient-to-r from-amber-50 to-amber-50/50 dark:from-amber-900/20 dark:to-amber-900/10 border border-amber-200 dark:border-amber-700 rounded-xl p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">+50</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-amber-800 dark:text-amber-300">Bonus Points Earned!</p>
+                          <p className="text-sm text-amber-700 dark:text-amber-400">You'll receive an additional 50 Truth Points for uploading documents</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="pt-6 border-t border-slate-200 dark:border-slate-700">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Button
+                      onClick={handleDocumentsSubmit}
+                      className="flex-1 btn-primary"
+                    >
+                      {hasUploadedDocuments ? 'Upload (+50 points)' : 'Continue without Documents'}
+                    </Button>
+                    <Button
+                      onClick={handleDocumentsSkip}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      <SkipForward className="w-4 h-4 mr-2" />
+                      Skip This Step
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+        )}
+
         {/* Pledge Step */}
         {currentStep === 'pledge' && (
           <motion.div
@@ -193,7 +361,10 @@ export default function EmployeeSurveyPage() {
               <div className="mb-8">
                 <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-200 mb-4">Make Your Pledge</h2>
                 <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Congratulations! You've earned 50 Truth Points for completing the survey. Now make a public pledge to support transparency in your workplace and join the movement.
+                  {hasUploadedDocuments 
+                    ? "Congratulations! You've earned 100 Truth Points for completing the survey and uploading documents. Now make a public pledge to support transparency in your workplace and join the movement."
+                    : "Congratulations! You've earned 50 Truth Points for completing the survey. Now make a public pledge to support transparency in your workplace and join the movement."
+                  }
                 </p>
               </div>
               <div className="space-y-6">
@@ -203,9 +374,18 @@ export default function EmployeeSurveyPage() {
                       <span className="text-white font-bold text-lg">✓</span>
                     </div>
                     <div>
-                      <div className="text-green-600 dark:text-green-400 font-bold text-xl">+50 Truth Points</div>
-                      <span className="status-success">Survey Complete</span>
-                      <p className="text-green-700 dark:text-green-300 text-sm mt-1">You've successfully completed the transparency survey!</p>
+                      <div className="text-green-600 dark:text-green-400 font-bold text-xl">
+                        +{hasUploadedDocuments ? '100' : '50'} Truth Points
+                      </div>
+                      <span className="status-success">
+                        {hasUploadedDocuments ? 'Survey + Documents Complete' : 'Survey Complete'}
+                      </span>
+                      <p className="text-green-700 dark:text-green-300 text-sm mt-1">
+                        {hasUploadedDocuments 
+                          ? "You've successfully completed the survey and uploaded supporting documents!"
+                          : "You've successfully completed the transparency survey!"
+                        }
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -263,8 +443,12 @@ export default function EmployeeSurveyPage() {
               <div className="space-y-6">
                 <div className="text-center">
                   <div className="bg-gradient-to-r from-accent/10 to-accent/5 dark:from-accent/20 dark:to-accent/10 border border-accent/30 dark:border-accent/50 rounded-xl p-8">
-                    <div className="text-4xl font-bold text-accent mb-3">+150 Truth Points</div>
-                    <p className="text-slate-600 dark:text-slate-400 text-lg">Total earned from survey and pledge</p>
+                    <div className="text-4xl font-bold text-accent mb-3">
+                      +{hasUploadedDocuments ? '200' : '150'} Truth Points
+                    </div>
+                    <p className="text-slate-600 dark:text-slate-400 text-lg">
+                      Total earned from {hasUploadedDocuments ? 'survey, documents, and pledge' : 'survey and pledge'}
+                    </p>
                   </div>
                 </div>
                 
@@ -273,8 +457,9 @@ export default function EmployeeSurveyPage() {
                     <h4 className="font-medium text-blue-900 dark:text-blue-300 mb-3">Your Impact</h4>
                     <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-2">
                       <li>✓ Completed transparency survey</li>
+                      {hasUploadedDocuments && <li>✓ Uploaded supporting documents</li>}
                       <li>✓ Made public pledge</li>
-                      <li>✓ Earned 150 Truth Points</li>
+                      <li>✓ Earned {hasUploadedDocuments ? '200' : '150'} Truth Points</li>
                       <li>✓ Joined the movement</li>
                     </ul>
                   </div>
