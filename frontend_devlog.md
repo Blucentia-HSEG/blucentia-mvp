@@ -117,11 +117,13 @@ blucentia-mvp/
 **File**: `src/app/employee/page.tsx`
 
 **Features**:
-- **3-Step Process**: Survey → Pledge → Complete
+- **4-Step Process**: Survey → Documents → Pledge → Complete
 - **Dynamic Survey**: 6 questions covering transparency, ethics, culture, leadership
-- **Truth Points System**: 50 points for survey, 100 for pledge
-- **Progress Tracking**: Visual step indicator
+- **Document Upload**: Optional file upload with 50 bonus points
+- **Truth Points System**: 50 points for survey, 50 bonus for documents, 100 for pledge
+- **Progress Tracking**: Visual 4-step indicator
 - **Contextual Help**: Page-specific guidance
+- **Skip Functionality**: Users can skip document upload step
 
 **Survey Questions**:
 1. Financial transparency (scale 1-10)
@@ -131,9 +133,18 @@ blucentia-mvp/
 5. Leadership accessibility (scale 1-10)
 6. Improvement suggestions (text)
 
+**Document Upload Features**:
+- **Drag & Drop Interface**: Modern file upload area
+- **Multiple File Support**: Upload multiple documents
+- **File Type Validation**: PDF, DOC, DOCX, TXT, PNG, JPG, JPEG
+- **File Management**: Remove individual files before submitting
+- **Bonus Points**: 50 additional Truth Points for uploading documents
+- **Skip Option**: Clear skip button for users who don't want to upload
+
 **Mock Data Integration**:
 - `submitSurveyResponse()`: Awards 50 Truth Points
 - `submitPledge()`: Awards 100 Truth Points
+- Document upload: Awards 50 bonus Truth Points
 - Real-time stats updates
 
 ### 3. Company Dashboard (`/company`)
@@ -144,11 +155,20 @@ blucentia-mvp/
 - **Opt-In Toggle**: Companies can join/leave transparency program
 - **Employee Tracking**: View employee participation and Truth Points
 - **Badge System**: Transparency Champion badges for opted-in companies
+- **Certification System**: HSEG certification badges with level-based styling
+- **Next Certificate Progress**: Progress bar for upcoming certifications
 - **Global Stats**: Movement-wide statistics
 - **Watchlist Information**: Reasons for companies on watchlist
 
+**Certification Features**:
+- **HSEG Certifications**: Display earned certifications with badges
+- **Level-Based Styling**: Platinum, Gold, Silver, Bronze with distinct colors
+- **Next Certificate Progress**: Shows progress toward next certification
+- **Progress Tracking**: Completion percentage and estimated time
+- **Dynamic Points**: Additional points for certification achievements
+
 **Company States**:
-- **Opted-In**: Shows badge, high engagement metrics
+- **Opted-In**: Shows badge, high engagement metrics, certifications
 - **Watchlist**: Shows concerns, encourages opt-in
 - **Real-time Updates**: Stats update when toggling opt-in status
 
@@ -168,7 +188,23 @@ blucentia-mvp/
 - Performance dashboard
 - Copy-to-clipboard functionality
 
-### 5. Navigation & Layout
+### 5. Authentication System
+**Files**: `src/contexts/auth-context.tsx`, `src/components/auth/auth-guard.tsx`, `src/app/login/page.tsx`
+
+**Features**:
+- **Role-Based Authentication**: Employee and company user types
+- **Auth Context**: Global authentication state management
+- **Auth Guards**: Protected routes with permission checking
+- **Login Page**: Company executive login interface
+- **User State**: Persistent authentication across sessions
+
+**Authentication Flow**:
+- **Employee Access**: Public survey and pledge access
+- **Company Access**: Executive dashboard with company management
+- **Permission System**: Role-based access control
+- **Session Management**: Persistent login state
+
+### 6. Navigation & Layout
 **File**: `src/app/layout.tsx`, `src/components/navigation/Navigation.tsx`
 
 **Features**:
@@ -177,6 +213,14 @@ blucentia-mvp/
 - **Responsive Design**: Mobile-friendly navigation
 - **Active States**: Current page highlighting
 - **Footer**: Links and company information
+- **Optimized Layout**: Minimal and space-efficient design
+
+**Navigation Optimizations**:
+- **Minimal Login Button**: Compact company login button design
+- **Shortened Labels**: Tab labels optimized to prevent text breaking
+- **Responsive Breakpoints**: Better mobile and tablet navigation
+- **Space Efficiency**: Reduced padding and improved layout density
+- **Text Protection**: `whitespace-nowrap` and `truncate` for text handling
 
 ---
 
@@ -202,12 +246,15 @@ blucentia-mvp/
 ```typescript
 // Core entities
 - Company: id, name, logo, industry, size, isOptedIn, badgeUrl, pledgeCount, truthPointsTotal
+- Certification: id, name, type, level, earnedDate, description, requirements, badgeUrl
+- NextCertificate: id, name, type, progress, requirements, completedRequirements, estimatedCompletion
 
 // Key functions
 - toggleCompanyOptIn(): Switches opt-in status
 - getOptedInCompanies(): Returns transparency champions
 - getWatchlistCompanies(): Returns companies under observation
 - getCompanyStats(): Aggregates company metrics
+- getCompanyById(): Returns detailed company data with certifications
 ```
 
 #### 3. Token System (`tokens.ts`)
@@ -251,6 +298,30 @@ blucentia-mvp/
 - **Real-time updates** every 2 seconds
 - **Performance optimized** with useCallback
 - **Accessibility friendly** with proper ARIA labels
+
+#### 3. ScoringGauge (`src/components/ui/scoring-gauge.tsx`)
+- **Circular progress indicators** for company metrics
+- **Multi-score gauge** for comprehensive scoring
+- **Color-coded performance** levels
+- **Animated transitions** with smooth updates
+
+#### 4. CompanyRanking (`src/components/ui/company-ranking.tsx`)
+- **Company leaderboard** with ranking system
+- **Certification badges** display
+- **Performance metrics** comparison
+- **Interactive hover effects**
+
+#### 5. ReportsSection (`src/components/ui/reports-section.tsx`)
+- **Company transparency reports** display
+- **Report cards** with key findings
+- **Status indicators** for report types
+- **Responsive grid layout**
+
+#### 6. RecommendationsSection (`src/components/ui/recommendations-section.tsx`)
+- **Actionable recommendations** for companies
+- **Priority-based** organization
+- **Progress tracking** for recommendations
+- **Category-based** filtering
 
 #### 3. Navigation Components
 - **ContextualHelp**: Page-specific guidance
@@ -436,19 +507,25 @@ blucentia-mvp/
 ## 🎯 Demo Readiness
 
 ### What's Working
-✅ **Complete user flows**: Employee survey, company dashboard, affiliate program  
+✅ **Complete user flows**: Employee survey with document upload, company dashboard, affiliate program  
 ✅ **Real-time updates**: Live counters and statistics  
 ✅ **Responsive design**: Works on all device sizes  
 ✅ **Dark mode**: Full theme support  
 ✅ **Animations**: Smooth, professional interactions  
 ✅ **Mock data**: Comprehensive data services  
 ✅ **Navigation**: Intuitive user experience  
+✅ **Authentication system**: Role-based access control  
+✅ **Certification system**: HSEG badges and progress tracking  
+✅ **Document upload**: File upload with bonus points system  
+✅ **Optimized UI**: Minimal and space-efficient design  
 
 ### Demo Scenarios
-1. **Employee Journey**: Take survey → Make pledge → Earn Truth Points
-2. **Company Management**: View dashboard → Toggle opt-in → See badge changes
+1. **Employee Journey**: Take survey → Upload documents (optional) → Make pledge → Earn up to 200 Truth Points
+2. **Company Management**: View dashboard → See certifications → Toggle opt-in → See badge changes
 3. **Affiliate Program**: Create affiliate → Process referral → Earn tokens
 4. **Movement Stats**: Watch real-time counters update across the platform
+5. **Certification System**: View HSEG certifications → Track next certificate progress → See level-based badges
+6. **Document Upload**: Upload supporting documents → Earn bonus points → Skip option available
 
 ---
 
